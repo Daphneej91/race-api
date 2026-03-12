@@ -12,41 +12,11 @@ Cette API devra permettre :
 
 Les données devront être **persistées dans une base de données PostgreSQL**.
 
----
+# Cloner le projet
 
-# Contexte
-
-Une organisation sportive souhaite mettre en place une plateforme permettant de gérer les inscriptions à différentes courses.
-
-Chaque **coureur** peut s'inscrire à **plusieurs courses**, et chaque **course** peut accueillir **plusieurs coureurs**.
-
-Votre mission est de développer l'API qui permettra de gérer ces informations.
-
----
-
-# Stack technique
-
-Pour ce TP, vous utiliserez les technologies suivantes :
-
-* **Java 25**
-* **Spring Boot 4**
-* **Spring Web**
-* **Spring Data JPA**
-* **Flyway**
-
-
-* **Docker**
-* **PostgreSQL**
-* **Adminer**
-
----
-
-# Fork le projet
-
-Avant de commencer le TP, forkez le projet pour avoir votre propre repo associé au TP :
-![fork.png](fork.png)
-
-Clonez ensuite le projet **depuis votre repo**
+Clonez le projet : 
+Https: git clone https://github.com/Daphneej91/race-api.git
+SSH: git clone git@github.com:Daphneej91/race-api.git
 
 ---
 
@@ -103,78 +73,45 @@ http://localhost:8080
 ```
 
 ---
+### 4 Test
+Lancer Postman et aller en haut à gauche dans les trois petits points. Puis cliquer sur Import.
+Y copier coller le fichier postman-export.json present dans le dossier Race-Api.
+
+Vous pouvez ensuite tester les endpoints que vous voulez.
 
 # Modèle de données
 
 L'application repose sur trois entités principales.
-
-## Runner (Coureur)
-
-| Champ     | Type    | Description        |
-| --------- | ------- | ------------------ |
-| id        | Long    | identifiant unique |
-| firstName | String  | prénom             |
-| lastName  | String  | nom                |
-| email     | String  | email              |
-| age       | Integer | âge                |
-
 ---
 
-## Race (Course)
-
-| Champ           | Type    | Description                    |
-| --------------- | ------- | ------------------------------ |
-| id              | Long    | identifiant                    |
-| name            | String  | nom de la course               |
-| date            | Date    | date de la course              |
-| location        | String  | lieu                           |
-| maxParticipants | Integer | nombre maximum de participants |
-
----
-
-## Registration (Inscription)
-
-| Champ            | Type | Description              |
-| ---------------- | ---- | ------------------------ |
-| id               | Long | identifiant              |
-| runnerId         | Long | identifiant du coureur   |
-| raceId           | Long | identifiant de la course |
-| registrationDate | Date | date d'inscription       |
-
----
-
-# API à implémenter
+# Endpoints implémentés
 
 ## Gestion des coureurs
 
 ### Lister les coureurs
 
-```
 GET /runners
-```
-
----
+Retourne la liste de tous les coureurs.
 
 ### Récupérer un coureur
 
 ```
 GET /runners/{id}
 ```
+Retourne un coureur spécifique.
 
-Si le coureur n'existe pas :
-
-```
+Réponse possible :
+200 OK
 404 Not Found
-```
-
----
 
 ### Supprimer un coureur
 
 ```
 DELETE /runners/{id}
 ```
-
+Réponses :
+200 OK
+404 Not Found
 ---
 
 ### Créer un coureur
@@ -194,12 +131,10 @@ Body :
 }
 ```
 
-Réponse attendue :
-
-```
+Réponse :
 201 Created
-```
-
+Si l'email est invalide :
+400 Bad Request
 ---
 
 ### Modifier un coureur
@@ -219,19 +154,10 @@ Body :
 }
 ```
 
-Réponse attendue :
+Réponses :
 
-```
 201 Created
-```
-
----
-
-Si le coureur n'existe pas :
-
-```
 404 Not Found
-```
 
 ---
 
@@ -250,7 +176,9 @@ GET /races
 ```
 GET /races/{id}
 ```
-
+Réponses :
+200 OK
+404 Not Found
 ---
 
 ### Créer une course
@@ -269,7 +197,8 @@ Body :
   "maxParticipants": 500
 }
 ```
-
+Réponse :
+201 Created
 ---
 
 ### Compter le nombre de participants d'une course
@@ -313,7 +242,9 @@ Réponse :
 ```
 201 Created
 ```
-
+404 Not Found
+---
+409 Conflict (le coureur est déjà inscrit ou la course est complète)
 ---
 
 ### Lister les participants d'une course
@@ -321,7 +252,7 @@ Réponse :
 ```
 GET /races/{raceId}/registrations
 ```
-
+Retourne tous les coureurs inscrits à une course.
 ---
 
 ### Lister les courses d'un coureur
@@ -329,53 +260,15 @@ GET /races/{raceId}/registrations
 ```
 GET /runners/{runnerId}/races
 ```
-
+Retourne toutes les courses auxquelles un coureur est inscrit.
 ---
-
-# Règles métier
-
-Votre API doit respecter les règles suivantes :
-
-### Un coureur ne peut pas être inscrit deux fois à la même course
-
-Si cela arrive :
-
-```
-409 Conflict
-```
-
+# Bonus implémenté
+## Filtrer les courses par localisation
 ---
-
-### Les coureurs doivent avoir une adresse mail correcte
-
-Si un **mail** ne continent pas de @ :
-
-```
-400 Bad Request
-```
-
+GET /races?location=Paris
 ---
-
-### Une course ne peut pas dépasser son nombre maximum de participants
-
-Si la course est complète :
-
-```
-409 Conflict
-```
-
+Permet de récupérer uniquement les courses ayant lieu dans une ville donnée.
 ---
-
-### Les ressources doivent exister
-
-Si un **runner** ou une **race** n'existe pas :
-
-```
-404 Not Found
-```
-
----
-
 # Codes HTTP attendus
 
 | Code | Signification         |
@@ -387,36 +280,11 @@ Si un **runner** ou une **race** n'existe pas :
 | 409  | Conflit               |
 
 ---
+# Règles métier implémentées
 
-# Conseils
+Un coureur ne peut pas être inscrit deux fois à la même course → 409 Conflict
+Une course ne peut pas dépasser son nombre maximum de participants → 409 Conflict
+Les emails doivent être valides (contiennent @) → 400 Bad Request
+Les ressources doivent exister → 404 Not Found
 
-* Implémentez l'API **progressivement**
-* Testez vos endpoints avec Postman
-* Vérifiez les données directement dans **Adminer**
 
----
-
-# Bonus (optionnel)
-
-Si vous avez terminé le TP, vous pouvez ajouter un filtre 
-sur le location pour le endpoint de récupération des courses
-
-## Filtrage
-
-```
-GET /races?location=Paris
-```
-
----
-
-# Livrables
-
-Vous devez rendre :
-
-* le **code source**
-* un **README expliquant comment lancer le projet**
-* les **endpoints implémentés**
-
----
-
-Bon développement !
