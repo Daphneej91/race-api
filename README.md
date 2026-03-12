@@ -15,11 +15,17 @@ Les données devront être **persistées dans une base de données PostgreSQL**.
 # Cloner le projet
 
 Clonez le projet : 
-Https: git clone https://github.com/Daphneej91/race-api.git
-SSH: git clone git@github.com:Daphneej91/race-api.git
 
----
-
+* Https:
+  ```GitBash
+  git clone https://github.com/Daphneej91/race-api.git
+  ```
+ou
+* SSH:
+  ```GitBash
+  git clone git@github.com:Daphneej91/race-api.git
+  ```
+  
 # Lancer le projet
 
 ## 1 — Démarrer la base de données
@@ -73,15 +79,11 @@ http://localhost:8080
 ```
 
 ---
-### 4 Test
-Lancer Postman et aller en haut à gauche dans les trois petits points. Puis cliquer sur Import.
-Y copier coller le fichier postman-export.json present dans le dossier Race-Api.
+### 4 — Test
+Lancer Postman et aller en haut à gauche dans les trois petits points. Puis cliquer sur Import et copier coller le fichier postman-export.json present dans le dossier Race-Api.
 
 Vous pouvez ensuite tester les endpoints que vous voulez.
 
-# Modèle de données
-
-L'application repose sur trois entités principales.
 ---
 
 # Endpoints implémentés
@@ -89,20 +91,22 @@ L'application repose sur trois entités principales.
 ## Gestion des coureurs
 
 ### Lister les coureurs
-
-GET /runners
 Retourne la liste de tous les coureurs.
+```
+GET /runners
+```
+
 
 ### Récupérer un coureur
 
+Retourne un coureur spécifique.
 ```
 GET /runners/{id}
 ```
-Retourne un coureur spécifique.
 
 Réponse possible :
-200 OK
-404 Not Found
+* 200 OK
+* 404 Not Found
 
 ### Supprimer un coureur
 
@@ -110,9 +114,8 @@ Réponse possible :
 DELETE /runners/{id}
 ```
 Réponses :
-200 OK
-404 Not Found
----
+* 200 OK
+* 404 Not Found
 
 ### Créer un coureur
 
@@ -132,10 +135,10 @@ Body :
 ```
 
 Réponse :
-201 Created
+* 201 Created
 Si l'email est invalide :
-400 Bad Request
----
+* 400 Bad Request
+
 
 ### Modifier un coureur
 
@@ -156,8 +159,8 @@ Body :
 
 Réponses :
 
-201 Created
-404 Not Found
+* 201 Created
+* 404 Not Found
 
 ---
 
@@ -177,9 +180,8 @@ GET /races
 GET /races/{id}
 ```
 Réponses :
-200 OK
-404 Not Found
----
+* 200 OK
+* 404 Not Found
 
 ### Créer une course
 
@@ -198,8 +200,7 @@ Body :
 }
 ```
 Réponse :
-201 Created
----
+* 201 Created
 
 ### Compter le nombre de participants d'une course
 
@@ -214,10 +215,7 @@ Réponse :
 ```
 
 Si la course n'existe pas :
-
-```
-404 Not Found
-```
+* 404 Not Found
 
 ---
 
@@ -239,36 +237,38 @@ Body :
 
 Réponse :
 
-```
-201 Created
-```
-404 Not Found
----
-409 Conflict (le coureur est déjà inscrit ou la course est complète)
----
+* 201 Created
+* 404 Not Found
+* 409 Conflict
+
+Conflit possible: 
+* le coureur est déjà inscrit
+* la course est complète
 
 ### Lister les participants d'une course
 
+Retourne tous les coureurs inscrits à une course.
 ```
 GET /races/{raceId}/registrations
 ```
-Retourne tous les coureurs inscrits à une course.
----
 
 ### Lister les courses d'un coureur
+
+Retourne toutes les courses auxquelles un coureur est inscrit.
 
 ```
 GET /runners/{runnerId}/races
 ```
-Retourne toutes les courses auxquelles un coureur est inscrit.
----
+
+
 # Bonus implémenté
 ## Filtrer les courses par localisation
----
-GET /races?location=Paris
----
+
 Permet de récupérer uniquement les courses ayant lieu dans une ville donnée.
----
+```
+GET /races?location=Paris
+```
+
 # Codes HTTP attendus
 
 | Code | Signification         |
@@ -283,8 +283,11 @@ Permet de récupérer uniquement les courses ayant lieu dans une ville donnée.
 # Règles métier implémentées
 
 Un coureur ne peut pas être inscrit deux fois à la même course → 409 Conflict
+
 Une course ne peut pas dépasser son nombre maximum de participants → 409 Conflict
+
 Les emails doivent être valides (contiennent @) → 400 Bad Request
+
 Les ressources doivent exister → 404 Not Found
 
 
